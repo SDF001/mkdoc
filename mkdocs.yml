@@ -1,0 +1,14 @@
+site_name: My Docs
+nav:
+  - 编程语言:
+    - Java: Java/Java.md
+    - Python: Python/Python.md
+    - Shell: Shell/Shell.md
+    - HTML: HTML/HTML.md
+    - CSS: CSS/CSS.md
+    - JS: JS/JS.md
+  - 编程工具:
+    - Git: Git/Git.md
+  - 数据库:
+    - MySQL: MySQL/MySQL.md
+theme: readthedocs
