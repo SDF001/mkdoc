@@ -19,7 +19,6 @@ if [[ -f "mymkdoc/docs_zip.md5" ]];then
 	old_md5=`head -n 1 mymkdoc/docs_zip.md5`
 	if [[ "${current_md5}" != "${old_md5}" ]];then
 		echo "file has been changed"
-		rm -rf mymkdoc/docs
 		rm -rf mkdoc/docs
 		#unzip -o myNotebook/notebooks.zip -d dao/notebooks
 		python3 unzip.py mymkdoc/docs.zip mkdoc/docs/
@@ -28,7 +27,9 @@ if [[ -f "mymkdoc/docs_zip.md5" ]];then
 		echo "file has not been changed"
 	fi
 else
-	md5sum mymkdoc/docs.zip > mymkdoc/docs_zip.md5
+	rm -rf mkdoc/docs
+	python3 unzip.py mymkdoc/docs.zip mkdoc/docs/
+	echo "${current_md5}" > mymkdoc/docs_zip.md5
 fi
 
 cd mkdoc
