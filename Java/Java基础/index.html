@@ -51,9 +51,9 @@
                 <ul>
                     <li class="toctree-l1"><a class="reference internal" href="../Java/">Java</a>
                     </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../../Python/Python/">Python</a>
+                    <li class="toctree-l1"><a class="" href="../../Python/Python.md">Python</a>
                     </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../../Shell/Shell/">Shell</a>
+                    <li class="toctree-l1"><a class="" href="../../Shell/Shell.md">Shell</a>
                     </li>
                     <li class="toctree-l1"><a class="reference internal" href="../../HTML/HTML/">HTML</a>
                     </li>
@@ -69,7 +69,7 @@
                 </ul>
                 <p class="caption"><span class="caption-text">数据库</span></p>
                 <ul>
-                    <li class="toctree-l1"><a class="reference internal" href="../../MySQL/MySQL/">MySQL</a>
+                    <li class="toctree-l1"><a class="" href="../../MySQL/MySQL.md">MySQL</a>
                     </li>
                 </ul>
       </div>
@@ -259,14 +259,113 @@
 <code>// look inside c:\users</code><br />
 也会产生一个语法错误，因为\u后面并未跟着4个十六进制数。</p>
 <h4 id="unicodechar">Unicode和char类型</h4>
+<p>要想弄清char类型，就必须了解Unicode编码机制。Unicode打破了传统字符编码机制的限制。在Unicode出现之前，已经有许多种不同的标准：美国的ASCII、西欧语言中的ISO 8859-1、俄罗斯的KOI-8、中国的GB 18030和BIG-5等。这样就产生了下面两个问题：一个是对于任意给定的代码值，在不同的编码方案下有可能对应不同的字母；二是采用大字符集的语言其编码长度有可能不同。例如，有些常用的字符采用单字节编码，而另一些字符则需要两个或更多个字节。</p>
+<p>设计Unicode编码的目的就是要解决这些问题。在20世纪80年代开始启动设计工作时，人们认为两个字节的代码宽度足以对世界上各种语言的所有字符进行编码，并有足够的空间留给未来的扩展。在1991年发布了Unicode 1.0，当时仅占用65536个代码值中不到一半的部分。在设计Java时决定采用16位的Unicode字符集，这样会比使用8位字符集的程序设计语言有很大的改进。</p>
+<p>十分遗憾，经过一段时间，不可避免的事情发生了。Unicode字符超过了65536个，其主要原因是增加了大量的汉语、日语和韩语中的表意文字。现在，16位的char类型已经不能满足描述所有Unicode字符的需要了。</p>
+<p>下面利用一些专用术语解释一下Java语言解决这个问题的基本方法。从Java SE 5.0开始。码点(code point)是指与一个编码表中的某个字符对应的代码值。在Unicode标准中，码点采用十六进制书写，并加上前缀U+，例如U+0041就是拉丁字母A的码点。Unicode的码点可以分成17个代码级别(code plane)。第一个代码级别称为基本的多语言级别(basic multilingual plane)，码点从U+0000到U+FFFF，其中包括经典的Unicode代码；其余的16个级别码点从U+10000到U+10FFFF，其中包括一些辅助字符(supplementary character)。</p>
+<p>UTF-16编码采用不同长度的编码表示所有Unicode码点。在基本的多语言级别中，每个字符用16位表示，通常被称为代码单元(code unit)；而辅助字符采用一对连续的代码单元进行编码。这样构成的编码值落入基本的多语言级别中空闲的2048字节内，通常被称为替代区域(surrogate area)[U+D800~U+DBFF用于第一个代码单元，U+DC00~U+DFFF用于第二个代码单元]。这样设计十分巧妙，我们可以从中迅速地知道一个代码单元是一个字符的编码，还是一个辅助字符的第一或第二部分。例如，是八元数集(http://math.ucr.edu/home/baez/octonions)的一个数学符号，码点为U+1D546，编码为两个代码单元U+D835和U+DD46。(关于编码算法的具体描述见http://en.wikipedia.org/wiki/UTF-16)。</p>
+<p>在Java中，char类型描述了UTF-16编码中的一个代码单元。</p>
+<p>我们强烈建议不要在程序中使用char类型，除非确实需要处理UTF-16代码单元。最好将字符串作为抽象数据类型处理。</p>
 <h3 id="boolean">boolean类型</h3>
+<p>boolean(布尔)类型有两个值：false和true，用来判定逻辑条件。整型值和布尔值之间不能进行相互转换。</p>
 <h2 id="_5">变量</h2>
-<h2 id="_6">运算符</h2>
-<h2 id="_7">字符串</h2>
-<h2 id="_8">输入输出</h2>
-<h2 id="_9">控制流程</h2>
-<h2 id="_10">大数值</h2>
-<h2 id="_11">数组</h2>
+<p>在Java中，每个变量都有一个类型(type)。在声明变量时，变量的类型位于变量名之前。这里列举一些声明变量的示例：</p>
+<pre><code class="language-java">double salary;
+int vacationDays;
+long earthPopulation;
+boolean done;
+</code></pre>
+<p>可以看到，每个声明以分号结束。由于声明是一条完整的Java语句，所以必须以分号结束。</p>
+<p>变量名必须是一个以字母开头并由字母或数字构成的序列。需要注意，与大多数程序设计语言相比，Java中"字母"和"数字"的范围更大。字母包括'A' ~ 'Z'、'a' ~ 'z'、'_'、'$'或在某种语言中表示字母的任何Unicode字符。例如，德国的用户可以在变量名中使用字母'ä'；希腊人可以用π。同样，数字包括'0' ~ '9'和在某种语言中表示数字的任何Unicode字符。但'+'和'©'这样的符号不能出现在变量名中，空格也不行。变量名中所有的字符都是有意义的，并且大小写敏感。变量名的长度基本上没有限制。</p>
+<p><strong>提示</strong>：如果想要知道哪些Unicode字符属于Java中的“字母”，可以使用Character类的isJavaIdentifierStart和isJavaIdentifierPart方法来检查。</p>
+<p><strong>提示</strong>：尽管$是一个合法的Java字符，但不要在你自己的代码中使用这个字符。它只用在Java编译器或其他工具生成的名字中。</p>
+<p>另外，不能使用Java保留字作为变量名。</p>
+<p>可以在一行中声明多个变量：<br />
+<code>int i, j; //both are integers</code><br />
+不过，不提倡使用这种风格。逐一声明每一个变量可以提高程序的可读性。</p>
+<p><strong>注释</strong>：如前所述，变量名对大小写敏感，例如，hireday和hireDay是两个不同的变量名。在对两个不同的变量进行命名时，最好不要只存在大小写上的差异。</p>
+<h3 id="_6">变量初始化</h3>
+<p>声明一个变量之后，必须用赋值语句对变量进行显式初始化，千万不要使用未初始化的变量。例如，Java编译器认为下面的语句序列是错误的：</p>
+<pre><code class="language-java">int vacationDays;
+System.out.println(vacationDays); // ERROR--variable not initialized
+</code></pre>
+<p>要想对一个已经声明过的变量进行赋值，就需要将变量名放在等号(=)左侧，相应取值的Java表达式放在等号的右侧。</p>
+<pre><code class="language-java">int vacationDays;
+vacationDays = 12;
+</code></pre>
+<p>也可以将变量的声明和初始化放在同一行中。例如：</p>
+<pre><code class="language-java">int vacationDays = 12;
+</code></pre>
+<p>在Java中，变量的声明尽可能地靠近变量第一次使用的地方，这是一种良好的程序编写风格。</p>
+<h3 id="_7">常量</h3>
+<p>在Java中，利用关键字final指示常量。例如：</p>
+<pre><code class="language-java">public class Constants {
+    public static void main(String[] args) {
+        final double CM_PER_INCH = 2.54;
+        double paperWidth = 8.5;
+        double paperHeight = 11;
+        System.out.println(&quot;Paper size in centimeters: &quot;
+            + paperWidth * CM_PER_INCH + &quot; by &quot; + paperHeight * CM_PER_INCH);
+    }
+}
+</code></pre>
+<p>关键字final表示这个变量只能被赋值一次。一旦被赋值之后，就不能够再更改了。习惯上，常量名使用全大写。</p>
+<p>在Java中，经常希望某个常量可以在一个类中的多个方法中使用，通常将这些常量称为类常量。可以使用关键字static final设置一个类常量。下面是使用类常量的示例：</p>
+<pre><code class="language-java">public class Constants2 {
+    public static final double CM_PER_INCH = 2.54;
+
+    public static void main(String[] args) {
+        double paperWidth = 8.5;
+        double paperHeight = 11;
+        System.out.println(&quot;Paper size in centimeters: &quot;
+            + paperWidth * CM_PER_INCH + &quot; by &quot; + paperHeight * CM_PER_INCH);
+    }
+}
+</code></pre>
+<p>需要注意，类常量的定义位于main方法的外部。因此，在同一个类的其他方法中也可以使用这个常量。而且，如果一个常量被声明为public，那么其他类的方法也可以使用这个常量。在这个示例中，Constants2.CM_PERNCH就是这样一个常量。</p>
+<h2 id="_8">运算符</h2>
+<p>在Java中，使用算术运算符+、-、*、/表示加、减、乘、除运算。当参与/运算的两个操作数都是整数时，表示整数除法；否则，表示浮点除法。整数的求余操作(有时称为取模)用%表示。例如，15/2等于7，15%2等于1，15.0/2等于7.5。需要注意，整数被0除将会产生一个异常，而浮点数被0除将会得到无穷大或NaN结果。</p>
+<h3 id="_9">数学函数与常量</h3>
+<p>在Math类中，包含了各种各样的数学函数。在编写不同类别的程序时，可能需要的函数也不同。</p>
+<p>平方根——sqrt方法</p>
+<pre><code class="language-java">double x = 4;
+double y = Math.sqrt(x);
+System.out.println(y); // 2.0
+</code></pre>
+<p>幂运算——pow方法</p>
+<pre><code class="language-java">// 将y的值设置为x的a次幂(xa)。pow方法有两个double类型的参数，其返回结果也为double类型。
+double y = Math.pow(x, a);
+</code></pre>
+<p>整数余数——floorMod方法</p>
+<pre><code class="language-java">Math.floorMod(position + adjustment, 12); // 0~11之间的数
+</code></pre>
+<p>floorMod方法的目的是解决一个长期存在的有关整数余数的问题。考虑表达式n%2。所有人都知道，如果n是偶数，这个表达式为0；如果n是奇数，表达式则为1。当然，除非n是负数。如果n为负，这个表达式则为-1。</p>
+<p>下面考虑这样一个问题：计算一个时钟时针的位置。这里要做一个时间调整，而且要归一化为一个0~11之间的数。这很简单：(position+adjustment)%12。不过，如果这个调整为负会怎么样呢？你可能会得到一个负数。所以要引入一个分支，或者使用((position+adjustment)%12+12)%12。不管怎样，总之都很麻烦。</p>
+<p>floorMod方法就让这个问题变得容易了：floorMod(position+adjustment，12)总会得到一个0~11之间的数。(遗憾的是，对于负除数，floorMod会得到负数结果，不过这种情况在实际中很少出现。)</p>
+<p>常用的三角函数</p>
+<pre><code class="language-java">Math.sin
+Math.cos
+Math.tan
+Math.atan
+Math.atan2
+</code></pre>
+<p>指数函数以及它的反函数——自然对数以及以10为底的对数</p>
+<pre><code class="language-java">Math.exp
+Math.log
+Math.log10
+</code></pre>
+<p>π和e常量的近似值</p>
+<pre><code class="language-java">Math.PI
+Math.E
+</code></pre>
+<p><strong>注释</strong>：在Math类中，为了达到最快的性能，所有的方法都使用计算机浮点单元中的例程。如果得到一个完全可预测的结果比运行速度更重要的话，那么就应该使用StrictMath类。它使用“自由发布的Math库”(fdlibm)实现算法，以确保在所有平台上得到相同的结果。</p>
+<h3 id="_10">数值类型之间的转换</h3>
+<p><img alt="数值类型之间的合法转换" src="image/202106121016.jpg" /></p>
+<h2 id="_11">字符串</h2>
+<h2 id="_12">输入输出</h2>
+<h2 id="_13">控制流程</h2>
+<h2 id="_14">大数值</h2>
+<h2 id="_15">数组</h2>
               
             </div>
           </div>
